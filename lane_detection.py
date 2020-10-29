@@ -74,6 +74,11 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=6):
     #i understand what it does, but i dont understand where it comes from
     #much like some of the parameters in the hough function
     
+    # to prevent errors
+    if lines is None:
+        print ('no lane detected')
+        return 1
+
     for line in lines:
         #1
         for x1,y1,x2,y2 in line:
@@ -226,7 +231,7 @@ def process_image(image):
 Apply the still frame processing to video feeds
 """
 
-for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'extra.mp4']:
+for filename in ['project_video.mp4']:
     clip = VideoFileClip('videos/'+filename)#.subclip((3,25),(3,35))
     #clip_crop = crop(clip, x1=320, y1=0, x2=1600, y2=720)
     first_frame = 1
