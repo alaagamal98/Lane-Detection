@@ -249,7 +249,6 @@ def lane_fill_poly(binary_warped,undist,left_fit,right_fit,inverse_perspective_t
     ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0] )
     left_fitx = get_val(ploty,left_fit)
     right_fitx = get_val(ploty,right_fit)
-    
     # Create an image to draw the lines on
     warp_zero = np.zeros_like(binary_warped).astype(np.uint8)
     color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
@@ -257,6 +256,7 @@ def lane_fill_poly(binary_warped,undist,left_fit,right_fit,inverse_perspective_t
     # Recast x and y for cv2.fillPoly()
     pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
     pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
+    pts_mid = np.int_(pts_right - pts_left)
     pts = np.hstack((pts_left, pts_right))
 
     # Draw the lane 
@@ -267,7 +267,7 @@ def lane_fill_poly(binary_warped,undist,left_fit,right_fit,inverse_perspective_t
 
     result = cv.addWeighted(undist, 1, newwarp, 0.3, 0)
         
-    return result, color_warp
+    return result, color_warp, pts_mid
 
 def measure_curve(binary_warped,left_fit,right_fit):
         
@@ -354,8 +354,7 @@ def img_pipeline(img):
     right_fit_prev = right_fit
     
     #draw polygon
-    processed_frame, road_frame = lane_fill_poly(birdseye, img, left_fit, right_fit, inverse_perspective_transform)
-    
+    processed_frame, road_frame, mid_points = lane_fill_poly(birdseye, img, left_fit, right_fit, inverse_perspective_transform)
     #update ~twice per second
     if frame_count==0 or frame_count%15==0:
         #measure radii
@@ -404,8 +403,9 @@ def img_pipeline_topview(img):
     right_fit_prev = right_fit
     
     #draw polygon
-    processed_frame, road_frame = lane_fill_poly(birdseye, img, left_fit, right_fit, inverse_perspective_transform)
-    
+    processed_frame, road_frame, mid_points = lane_fill_poly(birdseye, img, left_fit, right_fit, inverse_perspective_transform)
+    print("frame: " + str(frame_count) + "\n" + str(mid_points) + "\n ")
+
     #update ~twice per second
     if frame_count==0 or frame_count%15==0:
         #measure radii
