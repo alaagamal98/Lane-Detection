@@ -404,7 +404,7 @@ def img_pipeline_topview(img):
     
     #draw polygon
     processed_frame, road_frame, mid_points = lane_fill_poly(birdseye, img, left_fit, right_fit, inverse_perspective_transform)
-    print("frame: " + str(frame_count) + "\n" + str(mid_points) + "\n ")
+    print("frame: " + str(frame_count) + "\nMid-Line coordinates array" + str(mid_points) + "\n ")
 
     #update ~twice per second
     if frame_count==0 or frame_count%15==0:
