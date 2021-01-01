@@ -3,6 +3,7 @@ import numpy as np
 import cv2 as cv
 from moviepy.editor import VideoFileClip
 import pickle
+import sys
 
 
 def abs_sobel_thresh(img, orient='x', thresh=(0, 255)):
@@ -283,6 +284,7 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
     pts_right[0] = np.flip(pts_right[0])
     pts_mid = np.int_(pts_right)
     # pts = []
+
     for i in range(len(pts_right[0])):
         pts_right[0][i] = np.flip(pts_right[0][i])
         pts_mid[0][i] = pts_right[0][i]
@@ -291,9 +293,10 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
         # for j in range(differance):
         #     pts.append([pts_left[0][i][0] + j, pts_left[0][i][1]])
         # pts.append(pts_right[0][i])
+    pts = np.hstack((pts_left, pts_right))
 
     # Draw the lane
-    cv.fillPoly(color_warp, np.int_([pts_left, pts_right]), (255, 255, 255))
+    cv.fillPoly(color_warp, np.int_([pts]), (255, 255, 255))
 
     # # Draw the lane
     cv.polylines(color_warp, np.int_([pts_mid]),
