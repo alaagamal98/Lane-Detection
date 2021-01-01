@@ -281,6 +281,11 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
     pts_left = np.int_(np.array([np.transpose(np.vstack([left_fitx, ploty]))]))
     pts_right = np.int_(np.array(
         [np.flipud(np.transpose(np.vstack([right_fitx, ploty])))]))
+
+    # Draw the lane
+    cv.fillPoly(color_warp, np.int_(
+        [np.hstack((pts_left, pts_right))]), (255, 255, 255))
+
     pts_right[0] = np.flip(pts_right[0])
     pts_mid = np.int_(pts_right)
     # pts = []
@@ -294,11 +299,7 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
         #     pts.append([pts_left[0][i][0] + j, pts_left[0][i][1]])
         # pts.append(pts_right[0][i])
 
-    # Draw the lane
-    cv.fillPoly(color_warp, np.int_(
-        [np.hstack((pts_left, pts_right))]), (255, 255, 255))
-
-    # # Draw the lane
+    # # Draw the middle line
     cv.polylines(color_warp, np.int_([pts_mid]),
                  False, (255, 0, 0),
                  2)
@@ -490,7 +491,7 @@ Apply the still frame processing to video feeds
 window_search = True
 frame_count = 0
 
-for filename in ['project_video.mp4', 'solidWhiteRight.mp4', 'solidYellowLeft.mp4']:
+for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'project_video.mp4']:
     clip = VideoFileClip('videos/'+filename)
     out = clip.fl_image(img_pipeline_topview)
     out.write_videofile('videos/topview_'+filename, audio=False, verbose=False)
@@ -499,7 +500,7 @@ for filename in ['project_video.mp4', 'solidWhiteRight.mp4', 'solidYellowLeft.mp
 window_search = True
 frame_count = 0
 
-for filename in ['project_video.mp4', 'solidWhiteRight.mp4', 'solidYellowLeft.mp4']:
+for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'project_video.mp4', ]:
     clip = VideoFileClip('videos/'+filename)
     out = clip.fl_image(img_pipeline)
     out.write_videofile('videos/processed_'+filename,
