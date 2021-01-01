@@ -293,10 +293,10 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
         # for j in range(differance):
         #     pts.append([pts_left[0][i][0] + j, pts_left[0][i][1]])
         # pts.append(pts_right[0][i])
-    pts = np.hstack((pts_left, pts_right))
 
     # Draw the lane
-    cv.fillPoly(color_warp, np.int_([pts]), (255, 255, 255))
+    cv.fillPoly(color_warp, np.int_(
+        [np.hstack((pts_left, pts_right))]), (255, 255, 255))
 
     # # Draw the lane
     cv.polylines(color_warp, np.int_([pts_mid]),
