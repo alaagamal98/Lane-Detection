@@ -500,7 +500,7 @@ for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'project_video.mp
 window_search = True
 frame_count = 0
 
-for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'project_video.mp4', ]:
+for filename in ['solidWhiteRight.mp4', 'solidYellowLeft.mp4', 'project_video.mp4']:
     clip = VideoFileClip('videos/'+filename)
     out = clip.fl_image(img_pipeline)
     out.write_videofile('videos/processed_'+filename,
