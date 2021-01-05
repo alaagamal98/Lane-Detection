@@ -4,7 +4,7 @@ import cv2 as cv
 from moviepy.editor import VideoFileClip
 import pickle
 import sys
-
+from skimage.draw import polygon
 
 def abs_sobel_thresh(img, orient='x', thresh=(0, 255)):
     # Convert to grayscale
@@ -277,27 +277,23 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
     warp_zero = np.zeros_like(binary_warped).astype(np.uint8)
     color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
 
-    # Recast x and y for cv2.fillPoly()
     pts_left = np.int_(np.array([np.transpose(np.vstack([left_fitx, ploty]))]))
     pts_right = np.int_(np.array(
         [np.flipud(np.transpose(np.vstack([right_fitx, ploty])))]))
 
-    # Draw the lane
+    #Draw the lane
     cv.fillPoly(color_warp, np.int_(
         [np.hstack((pts_left, pts_right))]), (255, 255, 255))
-
+    
     pts_right[0] = np.flip(pts_right[0])
-    pts_mid = np.int_(pts_right)
-    # pts = []
+    xCoordsLeft, yCoordsLeft = zip(*pts_left[0])
+    yCoordsRight,xCoordsRight = zip(*pts_right[0])
+    differance = np.array(xCoordsRight) - np.array(xCoordsLeft)
+    xCoordsMid = (differance / 2).astype(int) + np.array(xCoordsLeft)
+    yCoordsMid = yCoordsLeft
 
-    for i in range(len(pts_right[0])):
-        pts_right[0][i] = np.flip(pts_right[0][i])
-        pts_mid[0][i] = pts_right[0][i]
-        differance = pts_mid[0][i][0] - pts_left[0][i][0]
-        pts_mid[0][i][0] = (int(differance / 2)) + pts_left[0][i][0]
-        # for j in range(differance):
-        #     pts.append([pts_left[0][i][0] + j, pts_left[0][i][1]])
-        # pts.append(pts_right[0][i])
+    pts_mid = list(zip(xCoordsMid, yCoordsMid))
+    pts_right[0] = list(zip(xCoordsRight, yCoordsRight))
 
     # # Draw the middle line
     cv.polylines(color_warp, np.int_([pts_mid]),
@@ -310,7 +306,7 @@ def lane_fill_poly(binary_warped, undist, left_fit, right_fit, inverse_perspecti
 
     result = cv.addWeighted(undist, 1, newwarp, 0.3, 0)
 
-    return result, color_warp, pts_mid, pts_left, pts_right
+    return result, color_warp, np.array(pts_mid), pts_left, pts_right
 
 
 def measure_curve(binary_warped, left_fit, right_fit):
@@ -458,12 +454,10 @@ def img_pipeline_topview(img):
     # draw polygon
     processed_frame, road_frame, mid_points, left_points, right_points = lane_fill_poly(
         birdseye, img, left_fit, right_fit, inverse_perspective_transform)
-    print("frame: " + str(frame_count) +
-          "\Left-Lane coordinates array" + str(left_points) + "\n ")
-    print("frame: " + str(frame_count) +
-          "\Right-Lane coordinates array" + str(right_points) + "\n ")
-    print("frame: " + str(frame_count) +
-          "\nMid-Line coordinates array" + str(mid_points) + "\n ")
+    print("\nframe: " + str(frame_count) +
+          "\nLeft-Lane coordinates array\n" + str(left_points))
+    print("\nRight-Lane coordinates array\n" + str(right_points))
+    print("\nMid-Line coordinates array\n" + str(mid_points))
 
     # update ~twice per second
     if frame_count == 0 or frame_count % 15 == 0:
